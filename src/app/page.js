@@ -14,6 +14,8 @@ export default function Home() {
 
   const [show, setshow] = React.useState(false);
 
+  const [showAlbum, setshowAlbum] = React.useState(false);
+
   // const [ht, setht] = React.useState(0);
 
   console.log(url);
@@ -76,7 +78,7 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+    <main className="flex flex-col items-center justify-between px-24 py-12">
       {show ? (
         <p class="fixed top-0 left-0 right-0 bg-amber-500 text-white p-1 text-center">
           Loading...
@@ -85,6 +87,16 @@ export default function Home() {
         <p class="fixed top-0 left-0 right-0 bg-indigo-500 text-white p-1 text-center">
           Ready
         </p>
+      )}
+      {data.data.length ? (
+        <button
+          className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+          onClick={() => setshowAlbum(!showAlbum)}
+        >
+          Show Albums
+        </button>
+      ) : (
+        <></>
       )}
       {user && token ? (
         <div>
@@ -131,9 +143,39 @@ export default function Home() {
                     </p>
                   </div>
                 );
+              else if (i.media_type === "VIDEO")
+                return (
+                  <div key={index}>
+                    <a href={i.permalink}>
+                      {i.media_url ? (
+                        <video style={{ width: "300px", height: "300px" }}>
+                          <source src={i.media_url} />
+                        </video>
+                      ) : (
+                        <Image
+                          src={"/Image_not_available.png"}
+                          className="dark:invert"
+                          width={400}
+                          height={400}
+                          style={{
+                            width: "auto",
+                            height: "auto",
+                          }}
+                        />
+                      )}
+                    </a>
+                    <p className="truncate" style={{ maxWidth: "300px" }}>
+                      {i.caption}
+                    </p>
+                    <p style={{ maxWidth: "300px" }} className="text-xs">
+                      {moment(i.timestamp).fromNow()}
+                    </p>
+                  </div>
+                );
               else if (
-                i.media_type === "VIDEO" ||
-                i.media_type === "CAROUSEL_ALBUM"
+                (i.media_type === "CAROUSEL_ALBUM" && showAlbum) ||
+                i.caption.toLowerCase().includes("telugu") ||
+                i.caption.toLowerCase().includes("hyderabad")
               )
                 return (
                   <div key={index}>
@@ -165,24 +207,33 @@ export default function Home() {
                 );
             })}
           </div>
-          <div className="flex min-h-screen flex-col">
-            <button
-              className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-6 px-4 border border-gray-400 rounded shadow"
-              onClick={() => getNext(url)}
-            >
-              Next
-            </button>
-          </div>
+          {data.data.length ? (
+            <div className="flex flex-col mt-4">
+              <button
+                className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-6 px-4 border border-gray-400 rounded shadow"
+                onClick={() => getNext(url)}
+              >
+                Next
+              </button>
+            </div>
+          ) : (
+            <></>
+          )}
         </div>
       ) : (
-        <form onSubmit={handleSubmit}>
+        <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
           <label htmlFor="first">User ID</label>
           <input type="text" id="first" name="first" required />
 
           <label htmlFor="last">Token</label>
           <input type="password" id="last" name="last" required />
 
-          <button type="submit">Submit</button>
+          <button
+            className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+            type="submit"
+          >
+            Submit
+          </button>
         </form>
       )}
     </main>
