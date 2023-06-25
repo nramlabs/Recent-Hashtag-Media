@@ -173,9 +173,10 @@ export default function Home() {
                   </div>
                 );
               else if (
-                (i.media_type === "CAROUSEL_ALBUM" && showAlbum) ||
-                i.caption.toLowerCase().includes("telugu") ||
-                i.caption.toLowerCase().includes("hyderabad")
+                i.media_type === "CAROUSEL_ALBUM" &&
+                (showAlbum ||
+                  i.caption?.toLowerCase().includes("telugu") ||
+                  i.caption?.toLowerCase().includes("hyderabad"))
               )
                 return (
                   <div key={index}>
@@ -197,6 +198,16 @@ export default function Home() {
                         />
                       )}
                     </a>
+
+                    {i.caption?.toLowerCase().includes("telugu") ||
+                    i.caption?.toLowerCase().includes("hyderabad") ? (
+                      <button className="bg-red-200 hover:bg-gray-100 text-gray-800 font-semibold py-2 px-2 border border-gray-400 rounded shadow">
+                        TELUGU
+                      </button>
+                    ) : (
+                      <></>
+                    )}
+
                     <p className="truncate" style={{ maxWidth: "300px" }}>
                       {i.caption}
                     </p>
