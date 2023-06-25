@@ -135,6 +135,14 @@ export default function Home() {
                         }}
                       />
                     </a>
+                    {i.caption?.toLowerCase().includes("telugu") ||
+                    i.caption?.toLowerCase().includes("hyderabad") ? (
+                      <button className="bg-red-200 hover:bg-gray-100 text-gray-800 font-semibold py-2 px-2 border border-gray-400 rounded shadow">
+                        TELUGU
+                      </button>
+                    ) : (
+                      <></>
+                    )}
                     <p className="truncate" style={{ maxWidth: "300px" }}>
                       {i.caption}
                     </p>
@@ -164,6 +172,14 @@ export default function Home() {
                         />
                       )}
                     </a>
+                    {i.caption?.toLowerCase().includes("telugu") ||
+                    i.caption?.toLowerCase().includes("hyderabad") ? (
+                      <button className="bg-red-200 hover:bg-gray-100 text-gray-800 font-semibold py-2 px-2 border border-gray-400 rounded shadow">
+                        TELUGU
+                      </button>
+                    ) : (
+                      <></>
+                    )}
                     <p className="truncate" style={{ maxWidth: "300px" }}>
                       {i.caption}
                     </p>
