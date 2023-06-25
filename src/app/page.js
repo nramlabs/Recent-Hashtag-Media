@@ -19,6 +19,7 @@ export default function Home() {
   console.log(url);
 
   async function getImages(url, ht) {
+    setdata({ data: [] });
     setshow(true);
     url = `https://graph.facebook.com/v17.0/${ht}/recent_media?access_token=${token}&user_id=${user}&limit=50&fields=caption%2Cchildren%2Cmedia_type%2Cmedia_url%2Cpermalink%2Ctimestamp`;
     const options = {
@@ -41,6 +42,7 @@ export default function Home() {
   }
 
   async function getNext(url, ht) {
+    setdata({ data: [] });
     setshow(true);
     if (!url)
       url = `https://graph.facebook.com/v17.0/${ht}/recent_media?access_token=${token}&user_id=${user}&limit=50&fields=caption%2Cchildren%2Cmedia_type%2Cmedia_url%2Cpermalink%2Ctimestamp`;
