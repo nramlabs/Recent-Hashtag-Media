@@ -86,7 +86,7 @@ export default function Home() {
       )}
       {user && token ? (
         <div>
-          <div className="flex gap-1">
+          <div className="flex gap-1 mb-4">
             <button
               className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
               onClick={() => getImages(url, "17843786962029833")}
@@ -112,7 +112,6 @@ export default function Home() {
                     <a href={i.permalink}>
                       <Image
                         src={i.media_url}
-                        alt="Vercel Logo"
                         className="dark:invert"
                         width={400}
                         height={400}
@@ -130,41 +129,38 @@ export default function Home() {
                     </p>
                   </div>
                 );
-              else if (i.media_type === "VIDEO")
+              else if (
+                i.media_type === "VIDEO" ||
+                i.media_type === "CAROUSEL_ALBUM"
+              )
                 return (
                   <div key={index}>
                     <a href={i.permalink}>
-                      <video style={{ width: "300px", height: "300px" }}>
-                        <source src={i.media_url} />
-                      </video>
+                      {i.media_url ? (
+                        <video style={{ width: "300px", height: "300px" }}>
+                          <source src={i.media_url} />
+                        </video>
+                      ) : (
+                        <Image
+                          src={"/Image_not_available.png"}
+                          className="dark:invert"
+                          width={400}
+                          height={400}
+                          style={{
+                            width: "auto",
+                            height: "auto",
+                          }}
+                        />
+                      )}
                     </a>
                     <p className="truncate" style={{ maxWidth: "300px" }}>
                       {i.caption}
                     </p>
+                    <p style={{ maxWidth: "300px" }} className="text-xs">
+                      {moment(i.timestamp).fromNow()}
+                    </p>
                   </div>
                 );
-              // else if (i.media_type === "CAROUSEL_ALBUM") {
-              //   // return (
-              //   //   <div key={index}>
-              //   //     <a href={i.permalink} />
-              //   //     <p>{i.caption}</p>
-              //   //   </div>
-              //   // );
-              //   return (
-              //     <div key={index}>
-              //       <Iframe
-              //         url={i.permalink}
-              //         width="300px"
-              //         height="300px"
-              //         id=""
-              //         className=""
-              //         display="block"
-              //         position="relative"
-              //       />
-              //       <p style={{ maxWidth: "300px" }}>{i.caption}</p>
-              //     </div>
-              //   );
-              // }
             })}
           </div>
           <div className="flex min-h-screen flex-col">
