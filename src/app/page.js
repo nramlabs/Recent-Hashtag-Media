@@ -133,6 +133,7 @@ export default function Home() {
                           width: "auto",
                           height: "auto",
                         }}
+                        unoptimized
                       />
                     </a>
                     {i.caption?.toLowerCase().includes("telugu") ||
@@ -169,6 +170,7 @@ export default function Home() {
                             width: "auto",
                             height: "auto",
                           }}
+                          unoptimized
                         />
                       )}
                     </a>
@@ -211,6 +213,7 @@ export default function Home() {
                             width: "auto",
                             height: "auto",
                           }}
+                          unoptimized
                         />
                       )}
                     </a>
