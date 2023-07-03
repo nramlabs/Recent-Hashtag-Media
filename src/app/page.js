@@ -90,7 +90,7 @@ export default function Home() {
       )}
       {data.data.length ? (
         <button
-          className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+          className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 my-2 border border-gray-400 rounded shadow"
           onClick={() => setshowAlbum(!showAlbum)}
         >
           Show Albums
@@ -111,7 +111,13 @@ export default function Home() {
               className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
               onClick={() => getImages(url, "17843857102059948")}
             >
-              Shortfilm
+              Short film
+            </button>
+            <button
+              className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+              onClick={() => getImages(url, "17872177741036850")}
+            >
+              Hyderabad Actor
             </button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
