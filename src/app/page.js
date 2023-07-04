@@ -119,6 +119,18 @@ export default function Home() {
             >
               Hyderabad Actor
             </button>
+            <button
+              className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+              onClick={() => getImages(url, "17843742145053546")}
+            >
+              Auditions
+            </button>
+            <button
+              className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+              onClick={() => getImages(url, "17841562930103658")}
+            >
+              TFI
+            </button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
             {data.data.map((i, index) => {
