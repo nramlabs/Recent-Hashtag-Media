@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import moment from "moment";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function Home() {
   const [user, setuser] = useState("");
@@ -19,9 +19,13 @@ export default function Home() {
 
   const [ht, setht] = useState("");
 
-  const [tags, setTags] = useState(localStorage.getItem("tags"));
+  const [tags, setTags] = useState({});
 
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    setTags(localStorage.getItem("tags"));
+  }, []);
 
   async function getHashtagID(ht) {
     setdata({ data: [] });
