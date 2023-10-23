@@ -2,27 +2,64 @@
 
 import Image from "next/image";
 import moment from "moment";
-import React from "react";
+import React, { useState } from "react";
 
 export default function Home() {
-  const [user, setuser] = React.useState("");
-  const [token, settoken] = React.useState("");
+  const [user, setuser] = useState("");
 
-  const [url, seturl] = React.useState("");
+  const [token, settoken] = useState("");
 
-  const [data, setdata] = React.useState({ data: [] });
+  const [url, seturl] = useState("");
 
-  const [show, setshow] = React.useState(false);
+  const [data, setdata] = useState({ data: [] });
 
-  const [showAlbum, setshowAlbum] = React.useState(false);
+  const [show, setshow] = useState(false);
 
-  // const [ht, setht] = React.useState(0);
+  const [showAlbum, setshowAlbum] = useState(false);
 
-  console.log(url);
+  const [ht, setht] = useState("");
+
+  const [tags, setTags] = useState(localStorage.getItem("tags"));
+
+  const [error, setError] = useState("");
+
+  async function getHashtagID(ht) {
+    setdata({ data: [] });
+    setshow(true);
+    setError("");
+    const tagurl = `https://graph.facebook.com/v17.0/ig_hashtag_search?access_token=${token}&user_id=${user}&q=${ht}`;
+    const options = {
+      method: "GET",
+    };
+
+    const res = await fetch(tagurl);
+
+    const data = await res.json();
+
+    if (res.status === 200) {
+      const hashtagId = data.data[0].id;
+
+      var lstags = localStorage.getItem("tags");
+
+      lstags = lstags ? JSON.parse(lstags) : {};
+
+      lstags[ht] = hashtagId;
+
+      localStorage.setItem("tags", JSON.stringify(lstags));
+
+      setTags(JSON.stringify(lstags));
+
+      getImages(url, hashtagId);
+    } else if (res.status === 400) {
+      setError(data.error?.error_user_title);
+      setshow(false);
+    }
+  }
 
   async function getImages(url, ht) {
     setdata({ data: [] });
     setshow(true);
+    setError("");
     url = `https://graph.facebook.com/v17.0/${ht}/recent_media?access_token=${token}&user_id=${user}&limit=50&fields=caption%2Cchildren%2Cmedia_type%2Cmedia_url%2Cpermalink%2Ctimestamp`;
     const options = {
       method: "GET",
@@ -31,14 +68,10 @@ export default function Home() {
     try {
       const response = await fetch(url, options);
       const result = await response.json();
-      console.log(result);
-      console.log(typeof result);
-      // const j = await result.json();
       setdata(result);
       seturl(result.paging.next);
       setshow(false);
     } catch (error) {
-      console.error(error);
       setshow(false);
     }
   }
@@ -55,83 +88,90 @@ export default function Home() {
     try {
       const response = await fetch(url, options);
       const result = await response.json();
-      console.log(result);
-      console.log(typeof result);
-      // const j = await result.json();
       setdata(result);
       seturl(result.paging.next);
       window.scrollTo(0, 0);
       setshow(false);
     } catch (error) {
-      console.error(error);
       setshow(false);
     }
   }
 
-  const handleSubmit = async (event) => {
-    // Stop the form from submitting and refreshing the page.
+  const handleSearch = async (event) => {
     event.preventDefault();
 
-    // Send the data to the server in JSON format.
-    setuser(event.target.first.value);
-    settoken(event.target.last.value);
+    const term = event.target.searchterm.value;
+    if (term.length > 0) {
+      setht(event.target.searchterm.value);
+
+      getHashtagID(event.target.searchterm.value);
+    }
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setuser(event.target.userid.value);
+    settoken(event.target.lltoken.value);
   };
 
   return (
     <main className="flex flex-col items-center justify-between px-24 py-12">
-      {show ? (
-        <p class="fixed top-0 left-0 right-0 bg-amber-500 text-white p-1 text-center">
-          Loading...
-        </p>
-      ) : (
-        <p class="fixed top-0 left-0 right-0 bg-indigo-500 text-white p-1 text-center">
-          Ready
-        </p>
-      )}
-      {data.data.length ? (
-        <button
-          className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 my-2 border border-gray-400 rounded shadow"
-          onClick={() => setshowAlbum(!showAlbum)}
-        >
-          Show Albums
-        </button>
+      {token ? (
+        show ? (
+          <p className="fixed top-0 left-0 right-0 bg-amber-500 text-white p-1 text-center">
+            Loading...
+          </p>
+        ) : (
+          <p className="fixed top-0 left-0 right-0 bg-indigo-500 text-white p-1 text-center">
+            Ready
+          </p>
+        )
       ) : (
         <></>
       )}
       {user && token ? (
         <div>
-          <div className="flex gap-1 mb-4">
+          <form onSubmit={handleSearch}>
+            <label>
+              <input
+                className="w-full text-3xl	p-1.5		"
+                type="text"
+                id="searchterm"
+                name="searchterm"
+                placeholder="Search by hashtag"
+                value={ht}
+                onChange={(e) => setht(e.target.value)}
+              />
+            </label>
+          </form>
+          <p>{error}</p>
+          {data.data.length ? (
             <button
-              className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
-              onClick={() => getImages(url, "17843786962029833")}
+              className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 my-2 border border-gray-400 rounded shadow"
+              onClick={() => setshowAlbum(!showAlbum)}
             >
-              Casting Call
+              Show Albums
             </button>
-            <button
-              className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
-              onClick={() => getImages(url, "17843857102059948")}
-            >
-              Short film
-            </button>
-            <button
-              className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
-              onClick={() => getImages(url, "17872177741036850")}
-            >
-              Hyderabad Actor
-            </button>
-            <button
-              className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
-              onClick={() => getImages(url, "17843742145053546")}
-            >
-              Auditions
-            </button>
-            <button
-              className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
-              onClick={() => getImages(url, "17841562930103658")}
-            >
-              TFI
-            </button>
-          </div>
+          ) : (
+            <></>
+          )}
+          {tags ? (
+            <div className="flex gap-1 mt-4 mb-4">
+              {Object.entries(JSON.parse(tags)).map((tag, index) => {
+                return (
+                  <button
+                    key={index}
+                    className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+                    onClick={() => getImages(url, tag[1])}
+                  >
+                    {tag[0]}
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            <></>
+          )}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
             {data.data.map((i, index) => {
               if (i.media_type === "IMAGE")
@@ -152,6 +192,7 @@ export default function Home() {
                           height: "auto",
                         }}
                         unoptimized
+                        alt="photo"
                       />
                     </a>
                     {i.caption?.toLowerCase().includes("telugu") ||
@@ -189,6 +230,7 @@ export default function Home() {
                             height: "auto",
                           }}
                           unoptimized
+                          alt="photo"
                         />
                       )}
                     </a>
@@ -232,6 +274,7 @@ export default function Home() {
                             height: "auto",
                           }}
                           unoptimized
+                          alt="photo"
                         />
                       )}
                     </a>
@@ -270,11 +313,11 @@ export default function Home() {
         </div>
       ) : (
         <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
-          <label htmlFor="first">User ID</label>
-          <input type="text" id="first" name="first" required />
+          <label htmlFor="userid">User ID</label>
+          <input type="text" id="userid" name="userid" required />
 
-          <label htmlFor="last">Token</label>
-          <input type="password" id="last" name="last" required />
+          <label htmlFor="lltoken">Token</label>
+          <input type="password" id="lltoken" name="lltoken" required />
 
           <button
             className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
