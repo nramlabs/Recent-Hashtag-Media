@@ -15,7 +15,7 @@ export default function Home() {
 
   const [show, setshow] = useState(false);
 
-  const [showAlbum, setshowAlbum] = useState(false);
+  const [showAlbum, setshowAlbum] = useState(true);
 
   const [ht, setht] = useState("");
 
@@ -32,6 +32,8 @@ export default function Home() {
 
   useEffect(() => {
     setTags(localStorage.getItem("tags"));
+    const showValue = localStorage.getItem("showAlbums");
+    if (showValue !== null) setshowAlbum(showValue);
   }, []);
 
   useEffect(() => {
@@ -209,14 +211,24 @@ export default function Home() {
               <option value="50">50</option>
             </select>
           </div>
-          <p>{error}</p>
+          <p className="text-red-700 pt-1">{error}</p>
           {data.data.length ? (
-            <button
-              className="flex my-1.5 w-auto justify-center rounded-md bg-sky-500	px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
-              onClick={() => setshowAlbum(!showAlbum)}
-            >
-              Show Albums
-            </button>
+            <div className="flex items-center space-x-1 py-2">
+              <input
+                type="checkbox"
+                className="border-gray-300 rounded h-5 w-5"
+                onChange={(e) => {
+                  setshowAlbum(!showAlbum);
+                  localStorage.setItem("showAlbums", !showAlbum);
+                }}
+                checked={showAlbum}
+              />
+              <div className="flex flex-col">
+                <h1 className="text-gray-700 font-medium leading-none">
+                  Show Albums
+                </h1>
+              </div>
+            </div>
           ) : (
             <></>
           )}
