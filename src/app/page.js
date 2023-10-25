@@ -42,7 +42,15 @@ export default function Home() {
       `recent_media?access_token=${token}&user_id=${user}&limit=${limit}&fields=caption%2Cchildren%2Cmedia_type%2Cmedia_url%2Cpermalink%2Ctimestamp`
     );
     setdata({ data: [] });
-  }, [limit]);
+  }, [limit, user, token]);
+
+  // console.log(user);
+  // console.log(token);
+
+  // console.log(mediaURL)
+  // console.log(nextURL)
+
+  // console.log("url: ", url)
 
   async function getHashtagID(ht) {
     setdata({ data: [] });
@@ -152,7 +160,7 @@ export default function Home() {
   };
 
   return (
-    <main className="bg-white h-screen flex flex-col items-center justify-between px-24 py-12">
+    <main className="bg-white w-full h-screen flex flex-col items-center justify-between px-24 py-12">
       {token ? (
         show ? (
           <p className="fixed top-0 left-0 right-0 bg-amber-500 text-white p-1 text-center">
@@ -167,12 +175,12 @@ export default function Home() {
         <></>
       )}
       {user && token ? (
-        <div>
-          <div className="w-screen p-2">
+        <div className="w-full">
+          <div>
             <form onSubmit={handleSearch}>
               <label>
                 <input
-                  class="block w-full text-3xl rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="block w-full text-3xl rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   type="text"
                   id="searchterm"
                   name="searchterm"
@@ -182,7 +190,18 @@ export default function Home() {
                 />
               </label>
             </form>
-            <select name="option" onChange={handleChange} value={limit}>
+            <label
+              htmlFor="option"
+              className="block text-sm font-medium leading-6 text-gray-900"
+            >
+              Limit
+            </label>
+            <select
+              name="option"
+              onChange={handleChange}
+              value={limit}
+              className="block w-auto rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+            >
               <option value="10">10</option>
               <option value="20">20</option>
               <option value="30">30</option>
@@ -193,7 +212,7 @@ export default function Home() {
           <p>{error}</p>
           {data.data.length ? (
             <button
-              className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 my-2 border border-gray-400 rounded shadow"
+              className="flex my-1.5 w-auto justify-center rounded-md bg-sky-500	px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
               onClick={() => setshowAlbum(!showAlbum)}
             >
               Show Albums
@@ -202,12 +221,18 @@ export default function Home() {
             <></>
           )}
           {tags ? (
-            <div className="flex gap-1 mt-4 mb-4">
+            <div className="flex gap-1 mt-1 mb-4">
+              <label
+                htmlFor="option"
+                className="self-center block text-sm font-medium leading-6 text-gray-900"
+              >
+                Recent Searches:
+              </label>
               {Object.entries(JSON.parse(tags)).map((tag, index) => {
                 return (
                   <button
                     key={index}
-                    class="flex w-full justify-center rounded-md bg-sky-500	px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
+                    className="flex w-auto justify-center rounded-md bg-sky-500	px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
                     onClick={() => getMedia(url, tag[1])}
                   >
                     {tag[0]}
@@ -358,27 +383,27 @@ export default function Home() {
           )}
         </div>
       ) : (
-        <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
-          <div class="sm:mx-auto sm:w-full sm:max-w-sm">
-            <h2 class="mt-10 text-center text-base font-bold leading-9 tracking-tight text-gray-900">
+        <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+          <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+            <h2 className="mt-10 text-center text-base font-bold leading-9 tracking-tight text-gray-900">
               Enter your User ID and Long-Lived Access Token
             </h2>
           </div>
-          <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-            <form class="space-y-6" onSubmit={handleSubmit}>
+          <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+            <form className="space-y-6" onSubmit={handleSubmit}>
               <div>
                 <label
                   htmlFor="userid"
-                  class="block text-sm font-medium leading-6 text-gray-900"
+                  className="block text-sm font-medium leading-6 text-gray-900"
                 >
                   User ID
                 </label>
-                <div class="mt-2">
+                <div className="mt-2">
                   <input
                     type="text"
                     id="userid"
                     name="userid"
-                    class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     required
                   />
                 </div>
@@ -386,23 +411,23 @@ export default function Home() {
               <div>
                 <label
                   htmlFor="lltoken"
-                  class="block text-sm font-medium leading-6 text-gray-900"
+                  className="block text-sm font-medium leading-6 text-gray-900"
                 >
                   Token
                 </label>
-                <div class="mt-2">
+                <div className="mt-2">
                   <input
                     type="password"
                     id="lltoken"
                     name="lltoken"
-                    class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     required
                   />
                 </div>
               </div>
               <div>
                 <button
-                  class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                   type="submit"
                 >
                   Submit
