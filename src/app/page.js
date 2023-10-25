@@ -23,20 +23,39 @@ export default function Home() {
 
   const [error, setError] = useState("");
 
+  const baseURL = "https://graph.facebook.com/v17.0/";
+
+  const [mediaURL, setMediaURL] = useState("");
+  const [nextURL, setNextURL] = useState("");
+
+  const [limit, setLimit] = useState(50);
+
   useEffect(() => {
     setTags(localStorage.getItem("tags"));
   }, []);
+
+  useEffect(() => {
+    setMediaURL(
+      `recent_media?access_token=${token}&user_id=${user}&limit=${limit}&fields=caption%2Cchildren%2Cmedia_type%2Cmedia_url%2Cpermalink%2Ctimestamp`
+    );
+    setNextURL(
+      `recent_media?access_token=${token}&user_id=${user}&limit=${limit}&fields=caption%2Cchildren%2Cmedia_type%2Cmedia_url%2Cpermalink%2Ctimestamp`
+    );
+    setdata({ data: [] });
+  }, [limit]);
 
   async function getHashtagID(ht) {
     setdata({ data: [] });
     setshow(true);
     setError("");
-    const tagurl = `https://graph.facebook.com/v17.0/ig_hashtag_search?access_token=${token}&user_id=${user}&q=${ht}`;
     const options = {
       method: "GET",
     };
 
-    const res = await fetch(tagurl);
+    const res = await fetch(
+      baseURL +
+        `ig_hashtag_search?access_token=${token}&user_id=${user}&q=${ht}`
+    );
 
     const data = await res.json();
 
@@ -53,18 +72,18 @@ export default function Home() {
 
       setTags(JSON.stringify(lstags));
 
-      getImages(url, hashtagId);
+      getMedia(url, hashtagId);
     } else if (res.status === 400) {
       setError(data.error?.error_user_title);
       setshow(false);
     }
   }
 
-  async function getImages(url, ht) {
+  async function getMedia(url, ht) {
     setdata({ data: [] });
     setshow(true);
     setError("");
-    url = `https://graph.facebook.com/v17.0/${ht}/recent_media?access_token=${token}&user_id=${user}&limit=50&fields=caption%2Cchildren%2Cmedia_type%2Cmedia_url%2Cpermalink%2Ctimestamp`;
+    url = baseURL + `${ht}/` + mediaURL;
     const options = {
       method: "GET",
     };
@@ -72,8 +91,14 @@ export default function Home() {
     try {
       const response = await fetch(url, options);
       const result = await response.json();
-      setdata(result);
-      seturl(result.paging.next);
+      console.log(result);
+      if (response.status === 200) {
+        setdata(result);
+        seturl(result.paging.next);
+      } else {
+        setdata({ data: [] });
+        setError(result.error?.message);
+      }
       setshow(false);
     } catch (error) {
       setshow(false);
@@ -83,8 +108,7 @@ export default function Home() {
   async function getNext(url, ht) {
     setdata({ data: [] });
     setshow(true);
-    if (!url)
-      url = `https://graph.facebook.com/v17.0/${ht}/recent_media?access_token=${token}&user_id=${user}&limit=50&fields=caption%2Cchildren%2Cmedia_type%2Cmedia_url%2Cpermalink%2Ctimestamp`;
+    if (!url) url = baseURL + `${ht}/` + nextURL;
     const options = {
       method: "GET",
     };
@@ -92,9 +116,14 @@ export default function Home() {
     try {
       const response = await fetch(url, options);
       const result = await response.json();
-      setdata(result);
-      seturl(result.paging.next);
-      window.scrollTo(0, 0);
+      if (response.status === 200) {
+        setdata(result);
+        seturl(result.paging.next);
+        window.scrollTo(0, 0);
+      } else {
+        setdata({ data: [] });
+        setError(result.error?.message);
+      }
       setshow(false);
     } catch (error) {
       setshow(false);
@@ -118,8 +147,12 @@ export default function Home() {
     settoken(event.target.lltoken.value);
   };
 
+  const handleChange = async (event) => {
+    setLimit(event.target.value);
+  };
+
   return (
-    <main className="flex flex-col items-center justify-between px-24 py-12">
+    <main className="bg-white h-screen flex flex-col items-center justify-between px-24 py-12">
       {token ? (
         show ? (
           <p className="fixed top-0 left-0 right-0 bg-amber-500 text-white p-1 text-center">
@@ -135,19 +168,28 @@ export default function Home() {
       )}
       {user && token ? (
         <div>
-          <form onSubmit={handleSearch}>
-            <label>
-              <input
-                className="w-full text-3xl	p-1.5		"
-                type="text"
-                id="searchterm"
-                name="searchterm"
-                placeholder="Search by hashtag"
-                value={ht}
-                onChange={(e) => setht(e.target.value)}
-              />
-            </label>
-          </form>
+          <div className="w-screen p-2">
+            <form onSubmit={handleSearch}>
+              <label>
+                <input
+                  class="block w-full text-3xl rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  type="text"
+                  id="searchterm"
+                  name="searchterm"
+                  placeholder="Search by hashtag"
+                  value={ht}
+                  onChange={(e) => setht(e.target.value)}
+                />
+              </label>
+            </form>
+            <select name="option" onChange={handleChange} value={limit}>
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="30">30</option>
+              <option value="40">40</option>
+              <option value="50">50</option>
+            </select>
+          </div>
           <p>{error}</p>
           {data.data.length ? (
             <button
@@ -165,8 +207,8 @@ export default function Home() {
                 return (
                   <button
                     key={index}
-                    className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
-                    onClick={() => getImages(url, tag[1])}
+                    class="flex w-full justify-center rounded-md bg-sky-500	px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
+                    onClick={() => getMedia(url, tag[1])}
                   >
                     {tag[0]}
                   </button>
@@ -316,20 +358,59 @@ export default function Home() {
           )}
         </div>
       ) : (
-        <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
-          <label htmlFor="userid">User ID</label>
-          <input type="text" id="userid" name="userid" required />
-
-          <label htmlFor="lltoken">Token</label>
-          <input type="password" id="lltoken" name="lltoken" required />
-
-          <button
-            className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
-            type="submit"
-          >
-            Submit
-          </button>
-        </form>
+        <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+          <div class="sm:mx-auto sm:w-full sm:max-w-sm">
+            <h2 class="mt-10 text-center text-base font-bold leading-9 tracking-tight text-gray-900">
+              Enter your User ID and Long-Lived Access Token
+            </h2>
+          </div>
+          <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+            <form class="space-y-6" onSubmit={handleSubmit}>
+              <div>
+                <label
+                  htmlFor="userid"
+                  class="block text-sm font-medium leading-6 text-gray-900"
+                >
+                  User ID
+                </label>
+                <div class="mt-2">
+                  <input
+                    type="text"
+                    id="userid"
+                    name="userid"
+                    class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    required
+                  />
+                </div>
+              </div>
+              <div>
+                <label
+                  htmlFor="lltoken"
+                  class="block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Token
+                </label>
+                <div class="mt-2">
+                  <input
+                    type="password"
+                    id="lltoken"
+                    name="lltoken"
+                    class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    required
+                  />
+                </div>
+              </div>
+              <div>
+                <button
+                  class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  type="submit"
+                >
+                  Submit
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
     </main>
   );
