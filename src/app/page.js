@@ -11,6 +11,8 @@ export default function Home() {
 
   const [url, seturl] = useState("");
 
+  const [urls, seturls] = useState([]);
+
   const [data, setdata] = useState({ data: [] });
 
   const [show, setshow] = useState(false);
@@ -44,15 +46,15 @@ export default function Home() {
       `recent_media?access_token=${token}&user_id=${user}&limit=${limit}&fields=caption%2Cchildren%2Cmedia_type%2Cmedia_url%2Cpermalink%2Ctimestamp`
     );
     setdata({ data: [] });
+    seturls([])
   }, [limit, user, token]);
 
   // console.log(user);
   // console.log(token);
-
   // console.log(mediaURL)
   // console.log(nextURL)
-
   // console.log("url: ", url)
+  // console.log("urls length: ", urls.length);
 
   async function getHashtagID(ht) {
     setdata({ data: [] });
@@ -91,6 +93,7 @@ export default function Home() {
 
   async function getMedia(url, ht) {
     setdata({ data: [] });
+    seturls([])
     setshow(true);
     setError("");
     url = baseURL + `${ht}/` + mediaURL;
@@ -101,10 +104,11 @@ export default function Home() {
     try {
       const response = await fetch(url, options);
       const result = await response.json();
-      console.log(result);
+      // console.log(result);
       if (response.status === 200) {
         setdata(result);
         seturl(result.paging.next);
+        seturls((i) => [...i, result.paging.next]);
       } else {
         setdata({ data: [] });
         setError(result.error?.message);
@@ -115,7 +119,8 @@ export default function Home() {
     }
   }
 
-  async function getNext(url, ht) {
+  async function getNext(url, ind, ht) {
+    // console.log("index in getnext", ind);
     setdata({ data: [] });
     setshow(true);
     if (!url) url = baseURL + `${ht}/` + nextURL;
@@ -129,6 +134,7 @@ export default function Home() {
       if (response.status === 200) {
         setdata(result);
         seturl(result.paging.next);
+        if (ind + 1 >= urls.length) seturls((i) => [...i, result.paging.next]);
         window.scrollTo(0, 0);
       } else {
         setdata({ data: [] });
@@ -381,7 +387,7 @@ export default function Home() {
                 );
             })}
           </div>
-          {data.data.length ? (
+          {/* {data.data.length ? (
             <div className="flex flex-col mt-4">
               <button
                 className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-6 px-4 border border-gray-400 rounded shadow"
@@ -389,6 +395,25 @@ export default function Home() {
               >
                 Next
               </button>
+            </div>
+          ) : (
+            <></>
+          )} */}
+          {data.data.length ? (
+            <div className="flex justify-center mt-4 mb-2">
+              {urls.map((url, i) => (
+                <div key={i} className="flex flex-col px-2">
+                  <button
+                    className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-4 px-4 border border-gray-400 rounded shadow"
+                    onClick={() => {
+                      // console.log("index in onclick", i);
+                      getNext(url, i);
+                    }}
+                  >
+                    {urls.length === i + 1 ? "Next" : i + 1}
+                  </button>
+                </div>
+              ))}
             </div>
           ) : (
             <></>
