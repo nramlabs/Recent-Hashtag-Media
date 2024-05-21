@@ -18,5 +18,13 @@
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: whitesmoke;
+  background: white;
+}
+
+select {
+  padding: 7px;
+}
+
+.searchBar {
+  width: 80%;
 }

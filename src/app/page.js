@@ -30,7 +30,7 @@ export default function Home() {
   const [mediaURL, setMediaURL] = useState("");
   const [nextURL, setNextURL] = useState("");
 
-  const [limit, setLimit] = useState(50);
+  const [limit, setLimit] = useState(10);
 
   useEffect(() => {
     setTags(localStorage.getItem("tags"));
@@ -46,7 +46,7 @@ export default function Home() {
       `recent_media?access_token=${token}&user_id=${user}&limit=${limit}&fields=caption%2Cchildren%2Cmedia_type%2Cmedia_url%2Cpermalink%2Ctimestamp`
     );
     setdata({ data: [] });
-    seturls([])
+    seturls([]);
   }, [limit, user, token]);
 
   // console.log(user);
@@ -93,7 +93,7 @@ export default function Home() {
 
   async function getMedia(url, ht) {
     setdata({ data: [] });
-    seturls([])
+    seturls([]);
     setshow(true);
     setError("");
     url = baseURL + `${ht}/` + mediaURL;
@@ -168,7 +168,7 @@ export default function Home() {
   };
 
   return (
-    <main className="bg-white w-full h-screen flex flex-col items-center justify-between px-24 py-12">
+    <main className="w-full h-screen flex flex-col items-center justify-between px-24 py-12">
       {token ? (
         show ? (
           <p className="fixed top-0 left-0 right-0 bg-amber-500 text-white p-1 text-center">
@@ -184,38 +184,44 @@ export default function Home() {
       )}
       {user && token ? (
         <div className="w-full">
-          <div>
-            <form onSubmit={handleSearch}>
-              <label>
-                <input
-                  className="block w-full text-3xl rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  type="text"
-                  id="searchterm"
-                  name="searchterm"
-                  placeholder="Search by hashtag"
-                  value={ht}
-                  onChange={(e) => setht(e.target.value)}
-                />
+          <div className="flex flex-row w-full">
+            <form className="searchBar mx-1" onSubmit={handleSearch}>
+              <label
+                htmlFor="option"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
+                Search
               </label>
+              <input
+                className="block w-full rounded-md border-0 p-2 leading-none text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600"
+                type="text"
+                id="searchterm"
+                name="searchterm"
+                placeholder="Search by hashtag"
+                value={ht}
+                onChange={(e) => setht(e.target.value)}
+              />
             </form>
-            <label
-              htmlFor="option"
-              className="block text-sm font-medium leading-6 text-gray-900"
-            >
-              Limit
-            </label>
-            <select
-              name="option"
-              onChange={handleChange}
-              value={limit}
-              className="block w-auto rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-            >
-              <option value="10">10</option>
-              <option value="20">20</option>
-              <option value="30">30</option>
-              <option value="40">40</option>
-              <option value="50">50</option>
-            </select>
+            <div>
+              <label
+                htmlFor="option"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
+                Limit
+              </label>
+              <select
+                name="option"
+                onChange={handleChange}
+                value={limit}
+                className="block w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600"
+              >
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+                <option value="40">40</option>
+                <option value="50">50</option>
+              </select>
+            </div>
           </div>
           <p className="text-red-700 pt-1">{error}</p>
           {data.data.length ? (
