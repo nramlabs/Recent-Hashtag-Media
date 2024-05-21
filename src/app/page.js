@@ -1,8 +1,9 @@
 "use client";
 
+import React, { useEffect, useState } from "react";
+
 import Image from "next/image";
 import moment from "moment";
-import React, { useState, useEffect } from "react";
 
 export default function Home() {
   const [user, setuser] = useState("");
@@ -30,7 +31,7 @@ export default function Home() {
   const [mediaURL, setMediaURL] = useState("");
   const [nextURL, setNextURL] = useState("");
 
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(50);
 
   useEffect(() => {
     setTags(localStorage.getItem("tags"));
@@ -311,9 +312,18 @@ export default function Home() {
                   <div key={index}>
                     <a href={i.permalink}>
                       {i.media_url ? (
-                        <video style={{ width: "300px", height: "300px" }}>
-                          <source src={i.media_url} />
-                        </video>
+                        <Image
+                          src={i.media_url}
+                          className="dark:invert"
+                          width={400}
+                          height={400}
+                          style={{
+                            width: "auto",
+                            height: "auto",
+                          }}
+                          unoptimized
+                          alt="photo"
+                        />
                       ) : (
                         <Image
                           src={"/Image_not_available.png"}
