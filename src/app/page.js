@@ -312,18 +312,9 @@ export default function Home() {
                   <div key={index}>
                     <a href={i.permalink}>
                       {i.media_url ? (
-                        <Image
-                          src={i.media_url}
-                          className="dark:invert"
-                          width={400}
-                          height={400}
-                          style={{
-                            width: "auto",
-                            height: "auto",
-                          }}
-                          unoptimized
-                          alt="photo"
-                        />
+                        <video style={{ width: "300px", height: "300px" }}>
+                          <source src={i.media_url} />
+                        </video>
                       ) : (
                         <Image
                           src={"/Image_not_available.png"}
