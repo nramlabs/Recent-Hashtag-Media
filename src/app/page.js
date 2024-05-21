@@ -277,7 +277,7 @@ export default function Home() {
                     className="m-6"
                     style={{ maxWidth: "300px" }}
                   >
-                    <a href={i.permalink}>
+                    <a target="_blank" href={i.permalink}>
                       <Image
                         src={i.media_url}
                         className="dark:invert"
@@ -310,7 +310,7 @@ export default function Home() {
               else if (i.media_type === "VIDEO")
                 return (
                   <div key={index}>
-                    <a href={i.permalink}>
+                    <a target="_blank" href={i.permalink}>
                       {i.media_url ? (
                         <video style={{ width: "300px", height: "300px" }}>
                           <source src={i.media_url} />
@@ -354,7 +354,7 @@ export default function Home() {
               )
                 return (
                   <div key={index}>
-                    <a href={i.permalink}>
+                    <a target="_blank" href={i.permalink}>
                       {i.media_url ? (
                         <video style={{ width: "300px", height: "300px" }}>
                           <source src={i.media_url} />
