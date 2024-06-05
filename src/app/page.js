@@ -270,7 +270,7 @@ export default function Home() {
           )}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
             {data.data.map((i, index) => {
-              if (i.media_type === "IMAGE")
+              if (i.media_type === "IMAGE" || i.media_type === "CAROUSEL_ALBUM")
                 return (
                   <div
                     key={index}
@@ -346,12 +346,7 @@ export default function Home() {
                     </p>
                   </div>
                 );
-              else if (
-                i.media_type === "CAROUSEL_ALBUM" &&
-                (showAlbum ||
-                  i.caption?.toLowerCase().includes("telugu") ||
-                  i.caption?.toLowerCase().includes("hyderabad"))
-              )
+              else
                 return (
                   <div key={index}>
                     <a target="_blank" href={i.permalink}>
