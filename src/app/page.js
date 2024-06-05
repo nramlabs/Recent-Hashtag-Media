@@ -348,28 +348,25 @@ export default function Home() {
                 );
               else
                 return (
-                  <div key={index}>
+                  <div
+                    key={index}
+                    className="m-6"
+                    style={{ maxWidth: "300px" }}
+                  >
                     <a target="_blank" href={i.permalink}>
-                      {i.media_url ? (
-                        <video style={{ width: "300px", height: "300px" }}>
-                          <source src={i.media_url} />
-                        </video>
-                      ) : (
-                        <Image
-                          src={"/Image_not_available.png"}
-                          className="dark:invert"
-                          width={400}
-                          height={400}
-                          style={{
-                            width: "auto",
-                            height: "auto",
-                          }}
-                          unoptimized
-                          alt="photo"
-                        />
-                      )}
+                      <Image
+                        src={i.media_url}
+                        className="dark:invert"
+                        width={400}
+                        height={400}
+                        style={{
+                          width: "auto",
+                          height: "auto",
+                        }}
+                        unoptimized
+                        alt="photo"
+                      />
                     </a>
-
                     {i.caption?.toLowerCase().includes("telugu") ||
                     i.caption?.toLowerCase().includes("hyderabad") ? (
                       <button className="bg-red-200 hover:bg-gray-100 text-gray-800 font-semibold py-2 px-2 border border-gray-400 rounded shadow">
@@ -378,7 +375,6 @@ export default function Home() {
                     ) : (
                       <></>
                     )}
-
                     <p className="truncate" style={{ maxWidth: "300px" }}>
                       {i.caption}
                     </p>
