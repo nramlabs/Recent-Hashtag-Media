@@ -411,7 +411,7 @@ export default function Home() {
             <></>
           )} */}
           <div className="flex justify-center mt-4 mb-2">
-            {urls.map((url, i) => (
+            {urls?.map((url, i) => (
               <div key={i} className="flex flex-col px-2">
                 <button
                   className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-4 px-4 border border-gray-400 rounded shadow"
@@ -420,7 +420,7 @@ export default function Home() {
                     getNext(url, i);
                   }}
                 >
-                  {urls.length === i + 1 ? "Next" : i + 1}
+                  {urls?.length === i + 1 ? "Next" : i + 1}
                 </button>
               </div>
             ))}
