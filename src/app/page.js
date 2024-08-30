@@ -36,7 +36,7 @@ export default function Home() {
   useEffect(() => {
     setTags(sessionStorage.getItem("tags"));
     const r = JSON.parse(sessionStorage.getItem("urls"));
-    if (r) seturls(JSON.parse(sessionStorage.getItem("urls")));
+    if (r) seturls(r);
 
     const showValue = sessionStorage.getItem("showAlbums");
     if (showValue !== null) setshowAlbum(showValue);
