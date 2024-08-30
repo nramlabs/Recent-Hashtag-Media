@@ -34,8 +34,9 @@ export default function Home() {
   const [limit, setLimit] = useState(50);
 
   useEffect(() => {
-    setTags(localStorage.getItem("tags"));
-    const showValue = localStorage.getItem("showAlbums");
+    setTags(sessionStorage.getItem("tags"));
+    seturls(JSON.parse(sessionStorage.getItem("urls")));
+    const showValue = sessionStorage.getItem("showAlbums");
     if (showValue !== null) setshowAlbum(showValue);
   }, []);
 
@@ -47,8 +48,18 @@ export default function Home() {
       `recent_media?access_token=${token}&user_id=${user}&limit=${limit}&fields=caption%2Cchildren%2Cmedia_type%2Cmedia_url%2Cpermalink%2Ctimestamp`
     );
     setdata({ data: [] });
-    seturls([]);
   }, [limit, user, token]);
+
+  useEffect(() => {
+    seturls([]);
+  }, [limit]);
+
+  useEffect(() => {
+    if (urls.length) {
+      const tmp = [...urls];
+      sessionStorage.setItem("urls", JSON.stringify(tmp));
+    }
+  }, [urls]);
 
   // console.log(user);
   // console.log(token);
@@ -75,13 +86,13 @@ export default function Home() {
     if (res.status === 200) {
       const hashtagId = data.data[0].id;
 
-      var lstags = localStorage.getItem("tags");
+      var lstags = sessionStorage.getItem("tags");
 
       lstags = lstags ? JSON.parse(lstags) : {};
 
       lstags[ht] = hashtagId;
 
-      localStorage.setItem("tags", JSON.stringify(lstags));
+      sessionStorage.setItem("tags", JSON.stringify(lstags));
 
       setTags(JSON.stringify(lstags));
 
@@ -232,7 +243,7 @@ export default function Home() {
                 className="border-gray-300 rounded h-5 w-5"
                 onChange={(e) => {
                   setshowAlbum(!showAlbum);
-                  localStorage.setItem("showAlbums", !showAlbum);
+                  sessionStorage.setItem("showAlbums", !showAlbum);
                 }}
                 checked={showAlbum}
               />
@@ -397,25 +408,21 @@ export default function Home() {
           ) : (
             <></>
           )} */}
-          {data.data.length ? (
-            <div className="flex justify-center mt-4 mb-2">
-              {urls.map((url, i) => (
-                <div key={i} className="flex flex-col px-2">
-                  <button
-                    className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-4 px-4 border border-gray-400 rounded shadow"
-                    onClick={() => {
-                      // console.log("index in onclick", i);
-                      getNext(url, i);
-                    }}
-                  >
-                    {urls.length === i + 1 ? "Next" : i + 1}
-                  </button>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <></>
-          )}
+          <div className="flex justify-center mt-4 mb-2">
+            {urls.map((url, i) => (
+              <div key={i} className="flex flex-col px-2">
+                <button
+                  className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-4 px-4 border border-gray-400 rounded shadow"
+                  onClick={() => {
+                    // console.log("index in onclick", i);
+                    getNext(url, i);
+                  }}
+                >
+                  {urls.length === i + 1 ? "Next" : i + 1}
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
       ) : (
         <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
