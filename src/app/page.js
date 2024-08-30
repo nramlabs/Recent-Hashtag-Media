@@ -51,7 +51,9 @@ export default function Home() {
   }, [limit, user, token]);
 
   useEffect(() => {
-    seturls([]);
+    if (token) {
+      seturls([]);
+    }
   }, [limit]);
 
   useEffect(() => {
