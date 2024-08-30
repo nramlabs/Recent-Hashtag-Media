@@ -57,7 +57,7 @@ export default function Home() {
   }, [limit]);
 
   useEffect(() => {
-    if (urls.length) {
+    if (urls?.length) {
       const tmp = [...urls];
       sessionStorage.setItem("urls", JSON.stringify(tmp));
     }
