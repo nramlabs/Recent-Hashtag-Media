@@ -34,11 +34,11 @@ export default function Home() {
   const [limit, setLimit] = useState(50);
 
   useEffect(() => {
-    setTags(sessionStorage.getItem("tags"));
-    const r = JSON.parse(sessionStorage.getItem("urls"));
+    setTags(localStorage.getItem("tags"));
+    const r = JSON.parse(localStorage.getItem("urls"));
     if (r) seturls(r);
 
-    const showValue = sessionStorage.getItem("showAlbums");
+    const showValue = localStorage.getItem("showAlbums");
     if (showValue !== null) setshowAlbum(showValue);
   }, []);
 
@@ -61,7 +61,7 @@ export default function Home() {
   useEffect(() => {
     if (urls?.length) {
       const tmp = [...urls];
-      sessionStorage.setItem("urls", JSON.stringify(tmp));
+      localStorage.setItem("urls", JSON.stringify(tmp));
     }
   }, [urls]);
 
@@ -90,13 +90,13 @@ export default function Home() {
     if (res.status === 200) {
       const hashtagId = data.data[0].id;
 
-      var lstags = sessionStorage.getItem("tags");
+      var lstags = localStorage.getItem("tags");
 
       lstags = lstags ? JSON.parse(lstags) : {};
 
       lstags[ht] = hashtagId;
 
-      sessionStorage.setItem("tags", JSON.stringify(lstags));
+      localStorage.setItem("tags", JSON.stringify(lstags));
 
       setTags(JSON.stringify(lstags));
 
@@ -247,7 +247,7 @@ export default function Home() {
                 className="border-gray-300 rounded h-5 w-5"
                 onChange={(e) => {
                   setshowAlbum(!showAlbum);
-                  sessionStorage.setItem("showAlbums", !showAlbum);
+                  localStorage.setItem("showAlbums", !showAlbum);
                 }}
                 checked={showAlbum}
               />
