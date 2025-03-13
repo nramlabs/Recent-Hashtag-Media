@@ -31,7 +31,7 @@ export default function Home() {
   const [mediaURL, setMediaURL] = useState("");
   const [nextURL, setNextURL] = useState("");
 
-  const [limit, setLimit] = useState(50);
+  const [limit, setLimit] = useState(30);
 
   useEffect(() => {
     setTags(localStorage.getItem("tags"));
