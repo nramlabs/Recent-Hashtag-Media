@@ -49,14 +49,17 @@ export default function Home() {
     setNextURL(
       `recent_media?access_token=${token}&user_id=${user}&limit=${limit}&fields=caption%2Cchildren%2Cmedia_type%2Cmedia_url%2Cpermalink%2Ctimestamp`
     );
-    setdata({ data: [] });
   }, [limit, user, token]);
 
   useEffect(() => {
-    if (token) {
-      seturls([]);
-    }
-  }, [limit]);
+    setdata({ data: [] });
+  }, [user, token]);
+
+  // useEffect(() => {
+  //   if (token) {
+  //     seturls([]);
+  //   }
+  // }, [limit]);
 
   useEffect(() => {
     if (urls?.length) {
