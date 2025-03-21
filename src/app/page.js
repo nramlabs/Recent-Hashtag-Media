@@ -126,8 +126,8 @@ export default function Home() {
       console.log("", result);
       if (response.status === 200) {
         setdata(result);
-        seturl(result.paging.next);
-        seturls((i) => [...i, result.paging.next]);
+        seturl(result.paging.next.replace(/&limit=\d+/i, ""));
+        seturls((i) => [...i, result.paging.next.replace(/&limit=\d+/i, "")]);
       } else {
         setdata({ data: [] });
         setError(result.error?.message);
@@ -152,8 +152,9 @@ export default function Home() {
       const result = await response.json();
       if (response.status === 200) {
         setdata(result);
-        seturl(result.paging.next);
-        if (ind + 1 >= urls.length) seturls((i) => [...i, result.paging.next]);
+        seturl(result.paging.next.replace(/&limit=\d+/i, ""));
+        if (ind + 1 >= urls.length)
+          seturls((i) => [...i, result.paging.next.replace(/&limit=\d+/i, "")]);
         window.scrollTo(0, 0);
       } else {
         setdata({ data: [] });
