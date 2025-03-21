@@ -44,10 +44,10 @@ export default function Home() {
 
   useEffect(() => {
     setMediaURL(
-      `recent_media?access_token=${token}&user_id=${user}&limit=${limit}&fields=caption%2Cchildren%2Cmedia_type%2Cmedia_url%2Cpermalink%2Ctimestamp`
+      `recent_media?access_token=${token}&user_id=${user}&fields=caption%2Cchildren%2Cmedia_type%2Cmedia_url%2Cpermalink%2Ctimestamp`
     );
     setNextURL(
-      `recent_media?access_token=${token}&user_id=${user}&limit=${limit}&fields=caption%2Cchildren%2Cmedia_type%2Cmedia_url%2Cpermalink%2Ctimestamp`
+      `recent_media?access_token=${token}&user_id=${user}&fields=caption%2Cchildren%2Cmedia_type%2Cmedia_url%2Cpermalink%2Ctimestamp`
     );
   }, [limit, user, token]);
 
@@ -115,7 +115,7 @@ export default function Home() {
     seturls([]);
     setshow(true);
     setError("");
-    url = baseURL + `${ht}/` + mediaURL;
+    url = baseURL + `${ht}/` + mediaURL + `&limit=${limit}`;
     const options = {
       method: "GET",
     };
@@ -123,7 +123,7 @@ export default function Home() {
     try {
       const response = await fetch(url, options);
       const result = await response.json();
-      // console.log(result);
+      console.log("", result);
       if (response.status === 200) {
         setdata(result);
         seturl(result.paging.next);
@@ -142,7 +142,7 @@ export default function Home() {
     // console.log("index in getnext", ind);
     setdata({ data: [] });
     setshow(true);
-    if (!url) url = baseURL + `${ht}/` + nextURL;
+    if (!url) url = baseURL + `${ht}/` + nextURL + `&limit=${limit}`;
     const options = {
       method: "GET",
     };
