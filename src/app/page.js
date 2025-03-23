@@ -33,8 +33,6 @@ export default function Home() {
 
   const [limit, setLimit] = useState(50);
 
-  console.log("limit :>> ", limit);
-
   useEffect(() => {
     setTags(localStorage.getItem("tags"));
     const r = JSON.parse(localStorage.getItem("urls"));
@@ -147,6 +145,7 @@ export default function Home() {
     setdata({ data: [] });
     setshow(true);
     if (!url) url = baseURL + `${ht}/` + nextURL + `&limit=${limit}`;
+    url = url + `&limit=${limit}`;
     const options = {
       method: "GET",
     };
