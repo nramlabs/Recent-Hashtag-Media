@@ -31,12 +31,16 @@ export default function Home() {
   const [mediaURL, setMediaURL] = useState("");
   const [nextURL, setNextURL] = useState("");
 
-  const [limit, setLimit] = useState(30);
+  const [limit, setLimit] = useState(50);
+
+  console.log("limit :>> ", limit);
 
   useEffect(() => {
     setTags(localStorage.getItem("tags"));
     const r = JSON.parse(localStorage.getItem("urls"));
     if (r) seturls(r);
+
+    setLimit(localStorage.getItem("limit") || 50);
 
     const showValue = localStorage.getItem("showAlbums");
     if (showValue !== null) setshowAlbum(showValue);
@@ -185,6 +189,7 @@ export default function Home() {
 
   const handleChange = async (event) => {
     setLimit(event.target.value);
+    localStorage.setItem("limit", event.target.value);
   };
 
   return (
