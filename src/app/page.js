@@ -45,11 +45,17 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    // setMediaURL(
+    //   `recent_media?access_token=${token}&user_id=${user}&fields=caption%2Cmedia_type%2Cmedia_url%2Cpermalink%2Ctimestamp`
+    // );
+    // setNextURL(
+    //   `recent_media?access_token=${token}&user_id=${user}&fields=caption%2Cmedia_type%2Cmedia_url%2Cpermalink%2Ctimestamp`
+    // );
     setMediaURL(
-      `recent_media?access_token=${token}&user_id=${user}&fields=caption%2Cchildren%2Cmedia_type%2Cmedia_url%2Cpermalink%2Ctimestamp`
+      `recent_media?access_token=${token}&user_id=${user}&fields=media_type%2Cmedia_url%2Cpermalink%2Ctimestamp`
     );
     setNextURL(
-      `recent_media?access_token=${token}&user_id=${user}&fields=caption%2Cchildren%2Cmedia_type%2Cmedia_url%2Cpermalink%2Ctimestamp`
+      `recent_media?access_token=${token}&user_id=${user}&fields=media_type%2Cmedia_url%2Cpermalink%2Ctimestamp`
     );
   }, [limit, user, token]);
 
