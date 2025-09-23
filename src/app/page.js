@@ -26,7 +26,7 @@ export default function Home() {
 
   const [error, setError] = useState("");
 
-  const baseURL = "https://graph.facebook.com/v17.0/";
+  const baseURL = "https://graph.facebook.com/v23.0/";
 
   const [mediaURL, setMediaURL] = useState("");
   const [nextURL, setNextURL] = useState("");
