@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import Image from "next/image";
 import moment from "moment";
@@ -32,6 +32,14 @@ export default function Home() {
   const [nextURL, setNextURL] = useState("");
 
   const [limit, setLimit] = useState(50);
+
+  const [autoFetch, setAutoFetch] = useState(false);
+
+  const [currentHtId, setCurrentHtId] = useState("");
+
+  const [nextUrl, setNextUrl] = useState("");
+
+  const sentinelRef = useRef();
 
   useEffect(() => {
     setTags(localStorage.getItem("tags"));
@@ -76,6 +84,26 @@ export default function Home() {
     }
   }, [urls]);
 
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && nextUrl) {
+        getNextAppend();
+      }
+    });
+    if (sentinelRef.current) observer.observe(sentinelRef.current);
+    return () => observer.disconnect();
+  }, [nextUrl]);
+
+  useEffect(() => {
+    let interval;
+    if (autoFetch && currentHtId) {
+      interval = setInterval(() => {
+        getNextAppend();
+      }, 30000);
+    }
+    return () => clearInterval(interval);
+  }, [autoFetch, currentHtId]);
+
   // console.log(user);
   // console.log(token);
   // console.log(mediaURL)
@@ -111,6 +139,8 @@ export default function Home() {
 
       setTags(JSON.stringify(lstags));
 
+      setCurrentHtId(hashtagId);
+
       getMedia(url, hashtagId);
     } else if (res.status === 400) {
       setError(data.error?.error_user_title);
@@ -118,7 +148,7 @@ export default function Home() {
     }
   }
 
-  async function getMedia(url, ht) {
+  async function getMedia(url, ht, isAppend = false) {
     setdata({ data: [] });
     seturls([]);
     setshow(true);
@@ -133,7 +163,12 @@ export default function Home() {
       const result = await response.json();
       console.log("", result);
       if (response.status === 200) {
-        setdata(result);
+        if (isAppend) {
+          setdata(prev => ({data: [...prev.data, ...result.data]}));
+        } else {
+          setdata(result);
+        }
+        setNextUrl(result.paging?.next || "");
         seturl(result.paging.next.replace(/&limit=\d+/i, ""));
         seturls((i) => [...i, result.paging.next.replace(/&limit=\d+/i, "")]);
       } else {
@@ -148,7 +183,6 @@ export default function Home() {
 
   async function getNext(url, ind, ht) {
     // console.log("index in getnext", ind);
-    setdata({ data: [] });
     setshow(true);
     if (!url) url = baseURL + `${ht}/` + nextURL + `&limit=${limit}`;
     url = url + `&limit=${limit}`;
@@ -160,13 +194,33 @@ export default function Home() {
       const response = await fetch(url, options);
       const result = await response.json();
       if (response.status === 200) {
-        setdata(result);
-        seturl(result.paging.next.replace(/&limit=\d+/i, ""));
-        if (ind + 1 >= urls.length)
-          seturls((i) => [...i, result.paging.next.replace(/&limit=\d+/i, "")]);
+        setdata(prev => ({data: [...prev.data, ...result.data]}));
+        setNextUrl(result.paging?.next || "");
         window.scrollTo(0, 0);
       } else {
         setdata({ data: [] });
+        setError(result.error?.message);
+      }
+      setshow(false);
+    } catch (error) {
+      setshow(false);
+    }
+  }
+
+  async function getNextAppend() {
+    if (!nextUrl) return;
+    setshow(true);
+    setError("");
+    const options = {
+      method: "GET",
+    };
+    try {
+      const response = await fetch(nextUrl, options);
+      const result = await response.json();
+      if (response.status === 200) {
+        setdata(prev => ({data: [...prev.data, ...result.data]}));
+        setNextUrl(result.paging?.next || "");
+      } else {
         setError(result.error?.message);
       }
       setshow(false);
@@ -274,6 +328,19 @@ export default function Home() {
           ) : (
             <></>
           )}
+          <div className="flex items-center space-x-1 py-2">
+            <input
+              type="checkbox"
+              className="border-gray-300 rounded h-5 w-5"
+              onChange={(e) => setAutoFetch(e.target.checked)}
+              checked={autoFetch}
+            />
+            <div className="flex flex-col">
+              <h1 className="text-gray-700 font-medium leading-none">
+                Auto Fetch
+              </h1>
+            </div>
+          </div>
           {tags ? (
             <div className="flex gap-1 mt-1 mb-4">
               <label
@@ -287,7 +354,7 @@ export default function Home() {
                   <button
                     key={index}
                     className="flex w-auto justify-center rounded-md bg-sky-500	px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
-                    onClick={() => getMedia(url, tag[1])}
+                    onClick={() => getMedia("", tag[1], true)}
                   >
                     {tag[0]}
                   </button>
@@ -414,6 +481,7 @@ export default function Home() {
                 );
             })}
           </div>
+          <div ref={sentinelRef} style={{ height: '1px' }} />
           {/* {data.data.length ? (
             <div className="flex flex-col mt-4">
               <button
@@ -426,21 +494,6 @@ export default function Home() {
           ) : (
             <></>
           )} */}
-          <div className="flex justify-center mt-4 mb-2">
-            {urls?.map((url, i) => (
-              <div key={i} className="flex flex-col px-2">
-                <button
-                  className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-4 px-4 border border-gray-400 rounded shadow"
-                  onClick={() => {
-                    // console.log("index in onclick", i);
-                    getNext(url, i);
-                  }}
-                >
-                  {urls?.length === i + 1 ? "Next" : i + 1}
-                </button>
-              </div>
-            ))}
-          </div>
         </div>
       ) : (
         <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
