@@ -60,10 +60,10 @@ export default function Home() {
     //   `recent_media?access_token=${token}&user_id=${user}&fields=caption%2Cmedia_type%2Cmedia_url%2Cpermalink%2Ctimestamp`
     // );
     setMediaURL(
-      `recent_media?access_token=${token}&user_id=${user}&fields=media_type%2Cmedia_url%2Cpermalink%2Ctimestamp`
+      `recent_media?access_token=${token}&user_id=${user}&fields=id%2Cmedia_type%2Cmedia_url%2Cpermalink%2Ctimestamp`
     );
     setNextURL(
-      `recent_media?access_token=${token}&user_id=${user}&fields=media_type%2Cmedia_url%2Cpermalink%2Ctimestamp`
+      `recent_media?access_token=${token}&user_id=${user}&fields=id%2Cmedia_type%2Cmedia_url%2Cpermalink%2Ctimestamp`
     );
   }, [limit, user, token]);
 
@@ -218,8 +218,14 @@ export default function Home() {
       const response = await fetch(nextUrl, options);
       const result = await response.json();
       if (response.status === 200) {
-        setdata(prev => ({data: [...prev.data, ...result.data]}));
+        setdata(prev => {
+          const newData = result.data.filter(item => !prev.data.some(existing => existing.id === item.id));
+          return {data: [...prev.data, ...newData]};
+        });
         setNextUrl(result.paging?.next || "");
+        if (!result.paging?.next || result.data.length === 0) {
+          setAutoFetch(false);
+        }
       } else {
         setError(result.error?.message);
       }
@@ -354,7 +360,10 @@ export default function Home() {
                   <button
                     key={index}
                     className="flex w-auto justify-center rounded-md bg-sky-500	px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
-                    onClick={() => getMedia("", tag[1], true)}
+                    onClick={() => {
+                      setCurrentHtId(tag[1]);
+                      getMedia("", tag[1], false);
+                    }}
                   >
                     {tag[0]}
                   </button>
