@@ -33,11 +33,13 @@ export default function Home() {
 
   const [limit, setLimit] = useState(50);
 
-  const [autoFetch, setAutoFetch] = useState(false);
+  const [autoFetch, setAutoFetch] = useState(true);
 
   const [currentHtId, setCurrentHtId] = useState("");
 
   const [nextUrl, setNextUrl] = useState("");
+
+  const [isFetching, setIsFetching] = useState(false);
 
   const sentinelRef = useRef();
 
@@ -86,22 +88,30 @@ export default function Home() {
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && nextUrl) {
+      console.log('Observer triggered, isIntersecting:', entries[0].isIntersecting, 'nextUrl:', nextUrl, 'isFetching:', isFetching);
+      if (entries[0].isIntersecting && nextUrl && !isFetching) {
+        console.log('Calling getNextAppend from observer');
         getNextAppend();
       }
     });
     if (sentinelRef.current) observer.observe(sentinelRef.current);
     return () => observer.disconnect();
-  }, [nextUrl]);
+  }, [nextUrl, isFetching]);
 
   useEffect(() => {
+    console.log('AutoFetch useEffect triggered, autoFetch:', autoFetch, 'currentHtId:', currentHtId);
     let interval;
     if (autoFetch && currentHtId) {
+      console.log('Setting interval for auto fetch');
       interval = setInterval(() => {
+        console.log('Interval triggered, calling getNextAppend');
         getNextAppend();
       }, 30000);
     }
-    return () => clearInterval(interval);
+    return () => {
+      console.log('Clearing interval');
+      clearInterval(interval);
+    };
   }, [autoFetch, currentHtId]);
 
   // console.log(user);
@@ -140,6 +150,7 @@ export default function Home() {
       setTags(JSON.stringify(lstags));
 
       setCurrentHtId(hashtagId);
+      console.log('Setting currentHtId:', hashtagId);
 
       getMedia(url, hashtagId);
     } else if (res.status === 400) {
@@ -208,30 +219,39 @@ export default function Home() {
   }
 
   async function getNextAppend() {
-    if (!nextUrl) return;
+    console.log('getNextAppend called, nextUrl:', nextUrl);
+    if (!nextUrl) {
+      console.log('No nextUrl, returning');
+      return;
+    }
+    setIsFetching(true);
     setshow(true);
     setError("");
     const options = {
       method: "GET",
     };
     try {
+      console.log('Fetching nextUrl:', nextUrl);
       const response = await fetch(nextUrl, options);
       const result = await response.json();
+      console.log('Fetch result:', result);
       if (response.status === 200) {
-        setdata(prev => {
-          const newData = result.data.filter(item => !prev.data.some(existing => existing.id === item.id));
-          return {data: [...prev.data, ...newData]};
-        });
+        const newData = result.data.filter(item => !data.some(existing => existing.id === item.id));
+        console.log('Prev data length:', data.length, 'Fetched data length:', result.data.length, 'New data length after filter:', newData.length);
+        setdata(prev => ({data: [...prev.data, ...newData]}));
         setNextUrl(result.paging?.next || "");
-        if (!result.paging?.next || result.data.length === 0) {
+        if (!result.paging?.next || result.data.length === 0 || newData.length === 0) {
           setAutoFetch(false);
         }
       } else {
         setError(result.error?.message);
       }
       setshow(false);
+      setIsFetching(false);
     } catch (error) {
+      console.log('Error in getNextAppend:', error);
       setshow(false);
+      setIsFetching(false);
     }
   }
 
@@ -361,6 +381,7 @@ export default function Home() {
                     key={index}
                     className="flex w-auto justify-center rounded-md bg-sky-500	px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
                     onClick={() => {
+                      console.log('Setting currentHtId from recent search:', tag[1]);
                       setCurrentHtId(tag[1]);
                       getMedia("", tag[1], false);
                     }}
