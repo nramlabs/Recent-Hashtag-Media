@@ -184,9 +184,15 @@ export default function Home() {
         } else {
           setdata(result);
         }
+        console.log('getMedia setting nextUrl to:', result.paging?.next);
         setNextUrl(result.paging?.next || "");
-        seturl(result.paging.next.replace(/&limit=\d+/i, ""));
-        seturls((i) => [...i, result.paging.next.replace(/&limit=\d+/i, "")]);
+        if (!result.paging?.next) {
+          console.log('No next page, disabling auto fetch');
+          setAutoFetch(false);
+        } else {
+          seturl(result.paging.next.replace(/&limit=\d+/i, ""));
+          seturls((i) => [...i, result.paging.next.replace(/&limit=\d+/i, "")]);
+        }
       } else {
         setdata({ data: [] });
         setError(result.error?.message);
