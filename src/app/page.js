@@ -104,8 +104,13 @@ export default function Home() {
     if (autoFetch && currentHtId) {
       console.log('Setting interval for auto fetch');
       interval = setInterval(() => {
-        console.log('Interval triggered, calling getNextAppend');
-        getNextAppend();
+        console.log('Interval triggered, nextUrl:', nextUrl);
+        if (nextUrl) {
+          console.log('Calling getNextAppend from interval');
+          getNextAppend();
+        } else {
+          console.log('Skipping interval, no nextUrl');
+        }
       }, 30000);
     }
     return () => {
@@ -236,8 +241,8 @@ export default function Home() {
       const result = await response.json();
       console.log('Fetch result:', result);
       if (response.status === 200) {
-        const newData = result.data.filter(item => !data.some(existing => existing.id === item.id));
-        console.log('Prev data length:', data.length, 'Fetched data length:', result.data.length, 'New data length after filter:', newData.length);
+        const newData = result.data.filter(item => !data.data.some(existing => existing.id === item.id));
+        console.log('Prev data length:', data.data.length, 'Fetched data length:', result.data.length, 'New data length after filter:', newData.length);
         setdata(prev => ({data: [...prev.data, ...newData]}));
         setNextUrl(result.paging?.next || "");
         if (!result.paging?.next || result.data.length === 0 || newData.length === 0) {
